@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Face Capture</title>
+	<style type="text/css">
+		#container{
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-between;
+		}
+		#videoElement{
+			width: 50%;
+			height: auto;
+		}
+		#canvasElement{
+			width: 50%;
+			height: auto;
+		}
+	</style>
+</head>
+<body>
+	<div id="container">
+		<video autoplay="true" id="videoElement"></video>
+		<canvas id="canvasElement"></canvas>
+	</div>
+	<button id="startButton">Start</button>
+	<button id="captureButton">Capture</button>
+	<button id="stopButton">Stop</button>
+	<button id="downloadButton" style="display:none;">Download</button>
+	<br>
+	<img id="capturedImage" width="50%"/>
+
+	<script type="text/javascript">
+		var video = document.querySelector("#videoElement");
+		var canvas = document.querySelector("#canvasElement");
+		var captureButton = document.querySelector("#captureButton");
+		var startButton = document.querySelector("#startButton");
+		var stopButton = document.querySelector("#stopButton");
+		var downloadButton = document.querySelector("#downloadButton");
+		var capturedImage = document.getElementById("capturedImage");
+		var stoppedMessage = document.createElement("p");
+		stoppedMessage.textContent = "STOPPED";
+		stoppedMessage.style.fontSize = "60px";
+		stoppedMessage.style.fontWeight = "bold";
+		stoppedMessage.style.color = "red";
+		stoppedMessage.style.position = "absolute";
+		stoppedMessage.style.top = "50%";
+		stoppedMessage.style.left = "50%";
+		stoppedMessage.style.transform = "translate(-50%, -50%)";
+		stoppedMessage.style.display = "none";
+		document.body.appendChild(stoppedMessage);
+
+		startButton.addEventListener("click", function(){
+			navigator.mediaDevices.getUserMedia({ video: true })
+			.then(function (stream) {
+				video.srcObject = stream;
+				video.play();
+				stoppedMessage.style.display = "none";
+			})
+			.catch(function (err0r) {
+				console.log("Something went wrong!");
+			});
+		});
+
+		captureButton.addEventListener("click", function(){
+			canvas.width = video.videoWidth;
+			canvas.height = video.videoHeight;
+			canvas.getContext("2d").drawImage(video, 0, 0);
+			var data = canvas.toDataURL("image/jpeg");
+			capturedImage.getContext("2d").clearRect(0, 0, capturedImage.width, capturedImage.height);
+			capturedImage.width = video.videoWidth;
+			capturedImage.height = video.videoHeight;
+			capturedImage.getContext("2d").drawImage(video, 0, 0);
+			downloadButton.style.display = "inline-block";
+			downloadButton.setAttribute("href", data);
+			downloadButton.setAttribute("download", "captured_image.jpg");
+		});
+
+		stopButton.addEventListener("click", function(){
+			video.pause();
+			video.srcObject.getTracks()[0].stop();
+			stoppedMessage.style.display = "block";
+			downloadButton.style.display = "none";
+		});
+
+	</script>
+</body>
+</html>
