@@ -1,0 +1,33 @@
+<html>
+<head>
+  <title>Network Speed Test</title>
+</head>
+<body>
+  <h1>Network Speed Test</h1>
+  <p>Click the button below to start the speed test.</p>
+  <button onclick="startTest()">Start Test</button>
+  <br><br>
+  <div id="status"></div>
+  <div id="result"></div>
+
+  <script>
+    function startTest() {
+      var img = new Image();
+      var startTime, endTime;
+      var fileSize = 1024 * 1024; // 1MB
+      var downloadUrl = 'https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png';
+
+      img.onload = function() {
+        endTime = (new Date()).getTime();
+        var downloadTime = (endTime - startTime) / 1000;
+        var downloadSpeed = fileSize / downloadTime / 1024 / 1024; // in Mbps
+        document.getElementById('result').innerHTML = 'Your download speed is ' + downloadSpeed.toFixed(2) + ' Mbps';
+      };
+
+      startTime = (new Date()).getTime();
+      img.src = downloadUrl + '?t=' + startTime;
+      document.getElementById('status').innerHTML = 'Downloading test file...';
+    }
+  </script>
+</body>
+</html>
